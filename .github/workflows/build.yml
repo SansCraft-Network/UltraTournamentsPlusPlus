@@ -14,9 +14,15 @@ jobs:
       matrix:
         java-version: [17, 21]
     
+    outputs:
+      artifact-name: ${{ steps.artifact.outputs.artifact-name }}
+      version: ${{ steps.version.outputs.version }}
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
       
     - name: Set up JDK ${{ matrix.java-version }}
       uses: actions/setup-java@v4
@@ -31,17 +37,46 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
         
+    - name: Extract version and build info
+      id: version
+      if: matrix.java-version == 17
+      run: |
+        VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+        COMMIT_SHORT=$(git rev-parse --short HEAD)
+        BUILD_NUMBER=$(git rev-list --count HEAD)
+        TIMESTAMP=$(date +'%Y%m%d-%H%M')
+        
+        if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          RELEASE_VERSION="${VERSION}-build.${BUILD_NUMBER}"
+        else
+          RELEASE_VERSION="${VERSION}-${TIMESTAMP}-${COMMIT_SHORT}"
+        fi
+        
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        echo "release-version=${RELEASE_VERSION}" >> $GITHUB_OUTPUT
+        echo "commit-short=${COMMIT_SHORT}" >> $GITHUB_OUTPUT
+        echo "build-number=${BUILD_NUMBER}" >> $GITHUB_OUTPUT
+        
     - name: Run tests
       run: mvn clean test
       
     - name: Build with Maven
       run: mvn clean compile package -DskipTests
       
+    - name: Get artifact info
+      id: artifact
+      if: matrix.java-version == 17
+      run: |
+        ARTIFACT_PATH=$(ls target/*.jar | grep -v original | head -1)
+        ARTIFACT_NAME=$(basename "${ARTIFACT_PATH}")
+        echo "artifact-path=${ARTIFACT_PATH}" >> $GITHUB_OUTPUT
+        echo "artifact-name=${ARTIFACT_NAME}" >> $GITHUB_OUTPUT
+        
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       if: matrix.java-version == 17
       with:
-        name: UltraTournamentsPlusPlus-${{ github.sha }}
+        name: UltraTournamentsPlusPlus-${{ steps.version.outputs.release-version }}
         path: target/*.jar
         retention-days: 30
         
@@ -52,6 +87,76 @@ jobs:
         name: test-results-${{ github.sha }}
         path: target/surefire-reports/
         retention-days: 7
+
+  auto-release:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: UltraTournamentsPlusPlus-${{ needs.build.outputs.version }}-build.${{ github.run_number }}
+        path: ./artifacts
+        
+    - name: Generate changelog
+      id: changelog
+      run: |
+        # Get commits since last release
+        LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+        if [ -z "$LAST_TAG" ]; then
+          COMMITS=$(git log --oneline --pretty=format:"- %s (%h)" -10)
+        else
+          COMMITS=$(git log ${LAST_TAG}..HEAD --oneline --pretty=format:"- %s (%h)")
+        fi
+        
+        # Create changelog file
+        cat > changelog.md << 'EOL'
+        ## 🚀 Auto-Release Build ${{ github.run_number }}
+
+        **Branch:** main  
+        **Commit:** ${{ github.sha }}  
+        **Build Date:** $(date +'%Y-%m-%d %H:%M:%S UTC')
+
+        ### 📋 Recent Changes
+        EOL
+        
+        echo "${COMMITS}" >> changelog.md
+        
+        cat >> changelog.md << 'EOL'
+
+        ### 📦 Installation
+        1. Download the JAR file below
+        2. Place it in your server's plugins folder
+        3. Configure Discord bot token in config.yml
+        4. Restart your server
+
+        ### ⚠️ Note
+        This is an automatic development build from the main branch. For stable releases, check the Releases page.
+        EOL
+        
+        # Set output
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        cat changelog.md >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+    - name: Create auto-release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: build-${{ github.run_number }}
+        name: "🤖 Auto-Build #${{ github.run_number }}"
+        body: ${{ steps.changelog.outputs.changelog }}
+        files: ./artifacts/*.jar
+        prerelease: true
+        make_latest: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   code-quality:
     runs-on: ubuntu-latest
