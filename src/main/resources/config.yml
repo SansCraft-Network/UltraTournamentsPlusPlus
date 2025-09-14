@@ -1,0 +1,354 @@
+# UltraTournamentsPlusPlus Configuration File
+# ==========================================
+
+# General plugin settings
+general:
+  # Language file to use (for future internationalization)
+  language: "en_US"
+  
+  # Check for updates on startup
+  check-updates: true
+  
+  # Enable debug mode (verbose logging)
+  debug: false
+
+# Tournament settings
+tournaments:
+  # Default maximum participants for new tournaments
+  default-max-participants: 16
+  
+  # Default tournament type (SINGLE_ELIMINATION, DOUBLE_ELIMINATION, ROUND_ROBIN, SWISS, CUSTOM)
+  default-type: "SINGLE_ELIMINATION"
+  
+  # Allow players to create tournaments
+  allow-player-creation: false
+  
+  # Minimum participants required to start a tournament
+  min-participants: 2
+  
+  # Auto-start tournaments when they reach max participants
+  auto-start-when-full: false
+  
+  # Automatic tournament cleanup after completion (hours)
+  auto-cleanup-hours: 24
+
+# Discord integration settings
+discord:
+  # Enable Discord bot integration
+  enabled: false
+  
+  # Discord bot token (keep this secret!)
+  token: "YOUR_BOT_TOKEN_HERE"
+  
+  # Discord server (guild) ID
+  guild-id: "YOUR_GUILD_ID_HERE"
+  
+  # Channel ID for tournament announcements
+  announcement-channel: "YOUR_CHANNEL_ID_HERE"
+  
+  # Channel ID for tournament results
+  results-channel: "YOUR_CHANNEL_ID_HERE"
+  
+  # Bot command prefix
+  command-prefix: "!"
+  
+  # Enable Discord commands
+  enable-commands: true
+  
+  # Announcements
+  announcements:
+    # Announce when tournaments are created
+    tournament-created: true
+    
+    # Announce when tournaments start
+    tournament-started: true
+    
+    # Announce match results
+    match-results: true
+    
+    # Announce tournament winners
+    tournament-finished: true
+
+# Challonge API integration
+challonge:
+  # Enable Challonge integration
+  enabled: false
+  
+  # Challonge API key
+  api-key: "YOUR_API_KEY_HERE"
+  
+  # Default tournament visibility (open, private)
+  default-visibility: "private"
+  
+  # Automatically sync brackets
+  auto-sync: true
+  
+  # Sync interval in minutes
+  sync-interval: 5
+
+# Database settings
+database:
+  # Database type (sqlite, mysql, postgresql)
+  type: "sqlite"
+  
+  # Database connection settings (for MySQL/PostgreSQL)
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "ultratournaments"
+    username: "username"
+    password: "password"
+    
+  # SQLite settings
+  sqlite:
+    file: "tournaments.db"
+
+# Message settings
+messages:
+  # Tournament messages
+  tournament-created: "&aA new tournament '&e{name}&a' has been created!"
+  tournament-started: "&aTournament '&e{name}&a' has started!"
+  tournament-finished: "&aTournament '&e{name}&a' has finished! Winner: &e{winner}"
+  
+  # Player messages
+  player-joined: "&a{player} joined tournament '&e{tournament}&a'!"
+  player-left: "&c{player} left tournament '&e{tournament}&c'!"
+  
+  # Error messages
+  tournament-not-found: "&cTournament not found!"
+  tournament-full: "&cTournament is full!"
+  already-in-tournament: "&cYou are already in this tournament!"
+  not-in-tournament: "&cYou are not in this tournament!"
+  no-permission: "&cYou don't have permission to do that!"
+  
+  # Info messages
+  tournament-info: |
+    &6&m----&r &e{name} &6&m----&r
+    &6Description: &f{description}
+    &6Type: &f{type}
+    &6Status: &f{status}
+    &6Participants: &f{current}/{max}
+    &6Created by: &f{creator}
+    &6Created: &f{created}
+
+# World settings
+worlds:
+  # Worlds where tournament commands are allowed
+  allowed-worlds:
+    - "world"
+    - "world_nether"
+    - "world_the_end"
+  
+  # Restrict tournament commands to specific worlds
+  restrict-to-worlds: false
+
+# Economy integration (if supported)
+economy:
+  # Enable economy features
+  enabled: false
+  
+  # Tournament entry fees
+  entry-fees:
+    enabled: false
+    default-fee: 100.0
+    
+  # Prize pools
+  prize-pools:
+    enabled: false
+    # Percentage of entry fees that go to prize pool
+    fee-percentage: 80.0
+    
+  # Winner rewards
+  rewards:
+    # First place percentage of prize pool
+    first-place: 60.0
+    # Second place percentage
+    second-place: 30.0
+    # Third place percentage
+    third-place: 10.0
+
+# Arena settings
+arenas:
+  # Default WorldGuard region settings
+  worldguard:
+    # Auto-create regions for new arenas
+    auto-create-regions: true
+    
+    # Default region flags for PvP arenas
+    pvp-arena-flags:
+      pvp: "allow"
+      build: "deny"  # Can be changed per arena
+      use: "allow"
+      interact: "allow"
+      
+    # Default region flags for Parkour arenas
+    parkour-arena-flags:
+      pvp: "deny"
+      build: "deny"
+      use: "allow"
+      interact: "allow"
+      
+  # Arena validation settings
+  validation:
+    # Minimum distance between spawn points (blocks)
+    min-spawn-distance: 5.0
+    
+    # Maximum distance from spawn to goal for parkour (blocks)
+    max-parkour-distance: 1000.0
+    
+    # Goal reach tolerance for parkour (blocks)
+    goal-tolerance: 2.0
+    
+  # PvP Arena settings
+  pvp:
+    # Minimum number of spawn points required
+    min-spawn-points: 2
+    
+    # Maximum number of spawn points allowed
+    max-spawn-points: 20
+    
+    # Default team names for PvP arenas
+    default-teams:
+      - "Red"
+      - "Blue"
+      
+  # Parkour Arena settings
+  parkour:
+    # Minimum number of spawn points required
+    min-spawn-points: 1
+    
+    # Maximum number of spawn points allowed
+    max-spawn-points: 5
+    
+    # Require goal location for parkour arenas
+    require-goal: true
+
+# Kit settings
+kits:
+  # Kit validation settings
+  validation:
+    # Maximum number of items allowed in a kit
+    max-items: 36
+    
+    # Maximum number of armor pieces
+    max-armor-pieces: 4
+    
+    # Maximum number of potion effects
+    max-potion-effects: 10
+    
+    # Maximum duration for potion effects (seconds)
+    max-effect-duration: 3600
+    
+  # Default kit settings
+  defaults:
+    # Give players food when applying kit
+    give-food: true
+    
+    # Default food level (0-20)
+    food-level: 20
+    
+    # Default saturation level (0-20)
+    saturation-level: 20
+    
+    # Clear player inventory before applying kit
+    clear-inventory: true
+    
+    # Clear player armor before applying kit
+    clear-armor: true
+    
+    # Clear existing potion effects before applying kit
+    clear-effects: true
+    
+    # Set player to full health when applying kit
+    full-health: true
+    
+  # Kit permissions
+  permissions:
+    # Allow players to create kits
+    allow-player-creation: false
+    
+    # Require permission to use specific kits
+    require-kit-permissions: false
+    
+    # Permission format: ultratournaments.kit.<kitname>
+    kit-permission-format: "ultratournaments.kit.{kit}"
+
+# Round management settings
+rounds:
+  # Default preparation time before rounds start (seconds)
+  default-preparation-time: 3
+  
+  # Automatically detect winners when players die/disconnect
+  auto-detect-winners: true
+  
+  # Time to wait after round ends before cleanup (seconds)
+  cleanup-delay: 3
+  
+  # Round announcement settings
+  announcements:
+    # Send countdown messages to participants
+    countdown-messages: true
+    
+    # Play sounds during countdown
+    countdown-sounds: true
+    
+    # Announce round start
+    round-start: true
+    
+    # Announce round winners
+    round-winners: true
+    
+  # PvP round settings
+  pvp-rounds:
+    # Prevent normal death drops in tournament rounds
+    prevent-death-drops: true
+    
+    # Keep inventory and experience on death
+    keep-inventory: true
+    
+    # Teleport defeated players after round ends
+    teleport-defeated: true
+    
+  # Round validation
+  validation:
+    # Minimum participants required for a round
+    min-participants: 2
+    
+    # Maximum participants allowed in a single round
+    max-participants: 16
+
+# Spectator system settings
+spectator:
+  # Enable spectator functionality
+  enabled: true
+  
+  # Spectator permissions
+  permissions:
+    # Permission required to spectate tournaments
+    spectate-permission: "ultratournaments.spectate"
+    
+    # Permission required to manage spectator regions (admin)
+    admin-permission: "ultratournaments.admin.spectator"
+    
+  # Spectator region configuration (configured via commands)
+  regions: {}
+    # Example configuration (set via commands):
+    # world:
+    #   region: "spectator_area"
+    #   teleport:
+    #     x: 100.5
+    #     y: 64.0
+    #     z: 200.5
+    #     yaw: 0.0
+    #     pitch: 0.0
+    
+  # Spectator settings
+  settings:
+    # Automatically teleport players to spectator area on /tournament spectate
+    auto-teleport: false
+    
+    # Allow spectators to see tournament information
+    show-tournament-info: true
+    
+    # Send spectators updates about tournament progress
+    send-updates: true

@@ -1,0 +1,170 @@
+name: UltraTournamentsPlusPlus
+version: '${project.version}'
+main: top.sanscraft.ultratournamentsplusplus.UltraTournamentsPlusPlus
+api-version: 1.20
+author: SansCraft-Network
+description: Tournament manager plugin for minecraft / spigot with challonge support and a discord portal
+website: https://github.com/SansCraft-Network/UltraTournamentsPlusPlus
+prefix: UltraTournaments++
+load: POSTWORLD
+depend: []
+softdepend: [WorldGuard, WorldEdit]
+
+commands:
+  tournament:
+    description: Main tournament command
+    aliases: [tourney, tourn, t]
+    usage: /<command> [subcommand] [args...]
+    permission: ultratournaments.player.info
+    permission-message: You don't have permission to use this command!
+  
+  tournjoin:
+    description: Join a tournament
+    aliases: [tj, jointournament]
+    usage: /<command> [tournament_name]
+    permission: ultratournaments.player.join
+    permission-message: You don't have permission to join tournaments!
+  
+  tournleave:
+    description: Leave a tournament
+    aliases: [tl, leavetournament]
+    usage: /<command> [tournament_name]
+    permission: ultratournaments.player.leave
+    permission-message: You don't have permission to leave tournaments!
+  
+  tournlist:
+    description: List all tournaments
+    aliases: [tournaments, tlist]
+    usage: /<command>
+    permission: ultratournaments.player.list
+    permission-message: You don't have permission to view tournaments!
+  
+  tourninfo:
+    description: Get information about a tournament
+    aliases: [tinfo, tournamentinfo]
+    usage: /<command> [tournament_name]
+    permission: ultratournaments.player.info
+    permission-message: You don't have permission to view tournament information!
+  
+  utparena:
+    description: UTP Arena management commands
+    aliases: [utparenas]
+    usage: /<command> [create|delete|list|info|setspawn|setgoal] [args...]
+    permission: ultratournaments.admin.arena
+    permission-message: You don't have permission to manage arenas!
+  
+  utpkit:
+    description: UTP Kit management commands
+    aliases: [utpkits]
+    usage: /<command> [create|delete|list|apply|save] [args...]
+    permission: ultratournaments.admin.kit
+    permission-message: You don't have permission to manage kits!
+  
+  discord:
+    description: Discord account linking commands
+    aliases: [discordlink, link]
+    usage: /<command> [verify|unlink|status|help] [args...]
+    permission: ultratournaments.player.discord
+    permission-message: You don't have permission to use Discord linking!
+
+permissions:
+  ultratournaments.*:
+    description: Gives access to all UltraTournaments++ features
+    children:
+      ultratournaments.admin: true
+      ultratournaments.player.*: true
+  
+  ultratournaments.admin:
+    description: Allows administration of tournaments
+    default: op
+    children:
+      ultratournaments.admin.create: true
+      ultratournaments.admin.delete: true
+      ultratournaments.admin.start: true
+      ultratournaments.admin.stop: true
+      ultratournaments.admin.reset: true
+      ultratournaments.admin.bracket: true
+      ultratournaments.admin.announce: true
+      ultratournaments.admin.config: true
+      ultratournaments.admin.arena: true
+      ultratournaments.admin.kit: true
+      ultratournaments.admin.spectator: true
+      ultratournaments.player.*: true
+  
+  ultratournaments.admin.create:
+    description: Allows creating tournaments
+    default: op
+  
+  ultratournaments.admin.delete:
+    description: Allows deleting tournaments
+    default: op
+  
+  ultratournaments.admin.start:
+    description: Allows starting tournaments
+    default: op
+  
+  ultratournaments.admin.stop:
+    description: Allows stopping tournaments
+    default: op
+  
+  ultratournaments.admin.reset:
+    description: Allows resetting tournaments
+    default: op
+  
+  ultratournaments.admin.bracket:
+    description: Allows managing tournament brackets
+    default: op
+  
+  ultratournaments.admin.announce:
+    description: Allows making tournament announcements
+    default: op
+  
+  ultratournaments.admin.config:
+    description: Allows modifying plugin configuration
+    default: op
+  
+  ultratournaments.admin.arena:
+    description: Allows managing arenas
+    default: op
+  
+  ultratournaments.admin.kit:
+    description: Allows managing kits
+    default: op
+  
+  ultratournaments.admin.spectator:
+    description: Allows managing spectator regions and settings
+    default: op
+  
+  ultratournaments.player.*:
+    description: Gives access to all player tournament features
+    children:
+      ultratournaments.player.join: true
+      ultratournaments.player.leave: true
+      ultratournaments.player.list: true
+      ultratournaments.player.info: true
+      ultratournaments.player.discord: true
+      ultratournaments.spectate: true
+  
+  ultratournaments.player.join:
+    description: Allows joining tournaments
+    default: true
+  
+  ultratournaments.player.leave:
+    description: Allows leaving tournaments
+    default: true
+  
+  ultratournaments.player.list:
+    description: Allows viewing tournament list
+    default: true
+  
+  ultratournaments.player.info:
+    description: Allows viewing tournament information
+    default: true
+  
+  ultratournaments.spectate:
+    description: Allows spectating tournaments
+    default: true
+  
+  ultratournaments.player.discord:
+    description: Allows using Discord account linking features
+    default: true
